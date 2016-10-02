@@ -9,8 +9,10 @@ const testKey2 = 'testKey2';
 const testValue2 = 'testValue2';
 const ttl = 3;
 
+cache.init({ ttl: globalTTL, interval: 1, randomize: false });
+
 test.beforeEach(() => {
-  cache.init({ ttl: globalTTL, interval: 1, randomize: false });
+  cache.flush();
   cache.set(testKey, testValue);
   cache.set(testKey2, testValue2);
 });
@@ -32,11 +34,13 @@ test('delete', t => {
 });
 
 test('flush', t => {
+  t.is(cache.size(), 2);
   cache.flush();
   t.false(cache.check(testKey));
   t.falsy(cache.get(testKey));
   t.false(cache.check(testKey2));
   t.falsy(cache.get(testKey2));
+  t.is(cache.size(), 0);
 });
 
 test('ttl-global', t => {

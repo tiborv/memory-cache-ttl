@@ -95,6 +95,11 @@ var _class = function () {
       });
       ttlQueue = [];
     }
+  }, {
+    key: "size",
+    value: function size() {
+      return ttlQueue.length;
+    }
   }]);
 
   return _class;

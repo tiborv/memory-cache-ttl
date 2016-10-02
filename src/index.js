@@ -71,4 +71,8 @@ export default class {
     ttlQueue = [];
   }
 
+  static size() {
+    return ttlQueue.length;
+  }
+
 }
