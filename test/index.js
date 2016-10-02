@@ -1,5 +1,5 @@
 import { test } from 'ava';
-import cache from '../';
+import cache from '../src';
 
 const testKey = 'testKey';
 const testValue = 'testValue';
@@ -9,10 +9,10 @@ const testKey2 = 'testKey2';
 const testValue2 = 'testValue2';
 const ttl = 3;
 
-cache.init({ ttl: globalTTL, interval: 1, randomize: false });
 
 test.beforeEach(() => {
   cache.flush();
+  cache.init({ ttl: globalTTL, interval: 1, randomize: false });
   cache.set(testKey, testValue);
   cache.set(testKey2, testValue2, ttl);
   cache.set(testKey2 + 'wat', testValue2, 10);
