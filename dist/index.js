@@ -100,6 +100,11 @@ var _class = function () {
     value: function size() {
       return ttlQueue.length;
     }
+  }, {
+    key: "__ttlQueue",
+    value: function __ttlQueue() {
+      return ttlQueue;
+    }
   }]);
 
   return _class;

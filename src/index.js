@@ -75,4 +75,8 @@ export default class {
     return ttlQueue.length;
   }
 
+  static __ttlQueue() {
+    return ttlQueue;
+  }
+
 }
