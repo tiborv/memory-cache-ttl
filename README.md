@@ -45,6 +45,9 @@ setTimeout(() => {
 ### .flush()
   deletes all values
 
+### .size()
+  returns the current number of entries in the cache
+
 ## Settings
 ### ttl [seconds]
   sets a global TTL

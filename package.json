@@ -1,6 +1,6 @@
 {
   "name": "memory-cache-ttl",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "repository": {
     "type": "git",
     "url": "git@github.com:tiborv/memory-cache-ttl.git"
@@ -11,7 +11,7 @@
     "build": "node ./node_modules/babel-cli/bin/babel src --out-file dist/index.js",
     "ava": "./node_modules/ava/cli.js",
     "lint": "./node_modules/.bin/eslint . --ext .js",
-    "test": "npm run lint && npm run ava"
+    "test": "npm run lint && npm run build && npm run ava"
   },
   "author": "Tibor Vukovic <m@tib.im>",
   "keywords": [
