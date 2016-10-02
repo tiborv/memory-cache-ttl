@@ -3,20 +3,20 @@ import cache from '../src';
 
 const testKey = 'testKey';
 const testValue = 'testValue';
-const globalTTL = 5;
+const globalTTL = 2;
 
 const testKey2 = 'testKey2';
 const testValue2 = 'testValue2';
-const ttl = 3;
+const localTTL = 3;
 
+test.before(() => {
+  cache.init({ ttl: globalTTL, interval: 1, randomize: false });
+});
 
 test.beforeEach(() => {
   cache.flush();
-  cache.init({ ttl: globalTTL, interval: 1, randomize: false });
+  cache.set(testKey2, testValue2, localTTL);
   cache.set(testKey, testValue);
-  cache.set(testKey2, testValue2, ttl);
-  cache.set(testKey2 + 'wat', testValue2, 10);
-  cache.set(testKey + 'wat', testValue, 4);
 });
 
 test('get', t => {
@@ -41,22 +41,22 @@ test('flush', t => {
   t.falsy(cache.get(testKey));
   t.false(cache.check(testKey2));
   t.falsy(cache.get(testKey2));
-  t.is(cache.size(), 0);
+  t.is(cache.__ttlQueue().length, 0);
 });
 
-test('ttl-global', t => {
+test.cb('ttl-global', t => {
   setTimeout(() => {
     t.true(cache.check(testKey));
     t.is(cache.get(testKey), testValue);
-  }, 3000);
+  }, 1000);
   setTimeout(() => {
     t.false(cache.check(testKey));
     t.falsy(cache.get(testKey));
     t.end();
-  }, 7000);
+  }, 3000);
 });
 
-test('ttl', t => {
+test.cb('ttl', t => {
   setTimeout(() => {
     t.true(cache.check(testKey2));
     t.is(cache.get(testKey2), testValue2);
@@ -70,7 +70,7 @@ test('ttl', t => {
 
 test('ttl-consistency', t => {
   const ttlLength = cache.__ttlQueue().length;
-  t.is(ttlLength, 4);
+  t.is(ttlLength, 2);
   cache.__ttlQueue().forEach((c, i, arr) => {
     if (i < ttlLength - 1) t.true(c.expires.getTime() <= arr[i + 1].expires.getTime());
     t.true(cache.check(c.id));
