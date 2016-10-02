@@ -14,7 +14,9 @@ cache.init({ ttl: globalTTL, interval: 1, randomize: false });
 test.beforeEach(() => {
   cache.flush();
   cache.set(testKey, testValue);
-  cache.set(testKey2, testValue2);
+  cache.set(testKey2, testValue2, ttl);
+  cache.set(testKey2 + 'wat', testValue2, 10);
+  cache.set(testKey + 'wat', testValue, 4);
 });
 
 test('get', t => {
@@ -34,7 +36,6 @@ test('delete', t => {
 });
 
 test('flush', t => {
-  t.is(cache.size(), 2);
   cache.flush();
   t.false(cache.check(testKey));
   t.falsy(cache.get(testKey));
@@ -56,7 +57,6 @@ test('ttl-global', t => {
 });
 
 test('ttl', t => {
-  cache.set(testKey2, testValue2, ttl);
   setTimeout(() => {
     t.true(cache.check(testKey2));
     t.is(cache.get(testKey2), testValue2);
@@ -66,4 +66,13 @@ test('ttl', t => {
     t.falsy(cache.get(testKey2));
     t.end();
   }, 4000);
+});
+
+test('ttl-consistency', t => {
+  const ttlLength = cache.__ttlQueue().length;
+  t.is(ttlLength, 4);
+  cache.__ttlQueue().forEach((c, i, arr) => {
+    if (i < ttlLength - 1) t.true(c.expires.getTime() <= arr[i + 1].expires.getTime());
+    t.true(cache.check(c.id));
+  });
 });
