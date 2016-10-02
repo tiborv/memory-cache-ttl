@@ -37,17 +37,20 @@ setTimeout(() => {
   returns true/false
 
 ### .get(key)
-  returns value for key
+  returns value of key
 
 ### .del(key)
-  deletes key
+  deletes value of key
+
+### .flush()
+  deletes all values
 
 ## Settings
-### ttl (seconds)
+### ttl [seconds]
   sets a global TTL
 
-### interval (seconds)
+### interval [seconds]
   sets TTL expiery-check interval
 
-### randomize
+### randomize [boolean]
   randomizes the TTL (needs global TTL to be set)

@@ -38,13 +38,11 @@ const checkExpired = () => {
 
 export default class {
   static init(o) {
-    if (!o.interval) throw Error('Missing interval option');
-    options = o;
+    options = o || { interval: 1 };
     checkExpired();
   }
 
   static set(id, value, ttl) {
-    if (options === {}) throw Error('Cache not initilized');
     cache[id] = value;
     if (ttl) return addToTTLQueue({ id, expires: genExpire(options.ttl) });
     addToTTLQueue({
@@ -56,19 +54,21 @@ export default class {
   }
 
   static check(id) {
-    if (options === {}) throw Error('Cache not initilized');
     return id in cache;
   }
 
   static get(id) {
-    if (options === {}) throw Error('Cache not initilized');
     return cache[id];
   }
 
   static del(id) {
-    if (options === {}) throw Error('Cache not initilized');
     delete cache[id];
     ttlQueue = ttlQueue.filter(t => t.id !== id);
+  }
+
+  static flush() {
+    ttlQueue.map(t => delete cache[t.id]);
+    ttlQueue = [];
   }
 
 }

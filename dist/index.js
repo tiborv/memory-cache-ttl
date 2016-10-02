@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -54,16 +54,14 @@ var _class = function () {
   }
 
   _createClass(_class, null, [{
-    key: 'init',
+    key: "init",
     value: function init(o) {
-      if (!o.interval) throw Error('Missing interval option');
-      options = o;
+      options = o || { interval: 1 };
       checkExpired();
     }
   }, {
-    key: 'set',
+    key: "set",
     value: function set(id, value, ttl) {
-      if (options === {}) throw Error('Cache not initilized');
       cache[id] = value;
       if (ttl) return addToTTLQueue({ id: id, expires: genExpire(options.ttl) });
       addToTTLQueue({
@@ -72,25 +70,30 @@ var _class = function () {
       });
     }
   }, {
-    key: 'check',
+    key: "check",
     value: function check(id) {
-      if (options === {}) throw Error('Cache not initilized');
       return id in cache;
     }
   }, {
-    key: 'get',
+    key: "get",
     value: function get(id) {
-      if (options === {}) throw Error('Cache not initilized');
       return cache[id];
     }
   }, {
-    key: 'del',
+    key: "del",
     value: function del(id) {
-      if (options === {}) throw Error('Cache not initilized');
       delete cache[id];
       ttlQueue = ttlQueue.filter(function (t) {
         return t.id !== id;
       });
+    }
+  }, {
+    key: "flush",
+    value: function flush() {
+      ttlQueue.map(function (t) {
+        return delete cache[t.id];
+      });
+      ttlQueue = [];
     }
   }]);
 

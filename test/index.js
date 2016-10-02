@@ -9,9 +9,10 @@ const testKey2 = 'testKey2';
 const testValue2 = 'testValue2';
 const ttl = 3;
 
-test.before(() => {
+test.beforeEach(() => {
   cache.init({ ttl: globalTTL, interval: 1, randomize: false });
   cache.set(testKey, testValue);
+  cache.set(testKey2, testValue2);
 });
 
 test('get', t => {
@@ -25,10 +26,17 @@ test('check', t => {
 });
 
 test('delete', t => {
-  cache.set(testKey + 'del', testValue + 'delVal');
-  t.true(cache.check(testKey + 'del'));
-  cache.del(testKey + 'del');
-  t.false(cache.check(testKey + 'del'));
+  cache.del(testKey);
+  t.false(cache.check(testKey));
+  t.falsy(cache.get(testKey));
+});
+
+test('flush', t => {
+  cache.flush();
+  t.false(cache.check(testKey));
+  t.falsy(cache.get(testKey));
+  t.false(cache.check(testKey2));
+  t.falsy(cache.get(testKey2));
 });
 
 test('ttl-global', t => {
