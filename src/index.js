@@ -44,7 +44,7 @@ export default class {
 
   static set(id, value, ttl) {
     cache[id] = value;
-    if (ttl) return addToTTLQueue({ id, expires: genExpire(options.ttl) });
+    if (ttl) return addToTTLQueue({ id, expires: genExpire(ttl) });
     addToTTLQueue({
       id,
       expires: options.randomize ?
@@ -69,10 +69,6 @@ export default class {
   static flush() {
     ttlQueue.map(t => delete cache[t.id]);
     ttlQueue = [];
-  }
-
-  static size() {
-    return ttlQueue.length;
   }
 
   static __ttlQueue() {
