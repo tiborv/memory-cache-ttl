@@ -1,5 +1,5 @@
 let options = {};
-const cache = {};
+const cache = new Map();
 let ttlQueue = [];
 
 const genExpire = seconds => {
@@ -26,7 +26,7 @@ const cleanExpired = now => {
       ttlQueue.splice(0, i);
       return;
     }
-    delete cache[ttlQueue[i].id];
+    cache.delete(ttlQueue[i].id);
   }
   ttlQueue = [];
 };
@@ -43,7 +43,7 @@ export default class {
   }
 
   static set(id, value, ttl) {
-    cache[id] = value;
+    cache.set(id, value);
     if (ttl) return addToTTLQueue({ id, expires: genExpire(ttl) });
     addToTTLQueue({
       id,
@@ -54,20 +54,20 @@ export default class {
   }
 
   static check(id) {
-    return id in cache;
+    return cache.has(id);
   }
 
   static get(id) {
-    return cache[id];
+    return cache.get(id);
   }
 
   static del(id) {
-    delete cache[id];
+    cache.delete(id);
     ttlQueue = ttlQueue.filter(t => t.id !== id);
   }
 
   static flush() {
-    ttlQueue.map(t => delete cache[t.id]);
+    cache.clear();
     ttlQueue = [];
   }
 
