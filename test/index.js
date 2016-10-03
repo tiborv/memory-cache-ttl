@@ -76,3 +76,8 @@ test('ttl-consistency', t => {
     t.true(cache.check(c.id));
   });
 });
+
+test('ttl-err', t => {
+  cache.init({ ttl: null, interval: 1, randomize: false });
+  t.throws(() => cache.set('wat', 'wat'), 'Global or local TTL needs to be set');
+});

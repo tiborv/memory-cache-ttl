@@ -19,7 +19,8 @@ const addToTTLQueue = ttl => {
   ttlQueue.push(ttl);
 };
 
-const cleanExpired = now => {
+const cleanExpired = () => {
+  const now = new Date();
   if (ttlQueue.length === 0 || ttlQueue[0].expires.getTime() > now.getTime()) return;
   for (let i = 0; i < ttlQueue.length; i++) {
     if (now.getTime() < ttlQueue[i].expires.getTime()) {
@@ -31,20 +32,23 @@ const cleanExpired = now => {
   ttlQueue = [];
 };
 
+let runningProcess;
+
 const checkExpired = () => {
-  cleanExpired(new Date());
-  setTimeout(checkExpired, options.interval * 1000);
+  if (runningProcess) clearInterval(runningProcess);
+  runningProcess = setInterval(cleanExpired, options.interval * 1000);
 };
 
 export default class {
-  static init(o) {
-    options = o || { interval: 1 };
+  static init(o = { interval: 1 }) {
+    options = o;
     checkExpired();
   }
 
   static set(id, value, ttl) {
     cache.set(id, value);
     if (ttl) return addToTTLQueue({ id, expires: genExpire(ttl) });
+    if (!options.ttl) throw new Error('Global or local TTL needs to be set');
     addToTTLQueue({
       id,
       expires: options.randomize ?
