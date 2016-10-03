@@ -1,4 +1,5 @@
-# memory-cache-ttl [![Build Status](https://travis-ci.org/tiborv/memory-cache-ttl.svg?branch=master)](https://travis-ci.org/tiborv/memory-cache-ttl)
+# memory-cache-ttl [![Build Status](https://travis-ci.org/tiborv/memory-cache-ttl.svg?branch=master)](https://travis-ci.org/tiborv/memory-cache-ttl) [![codecov](https://codecov.io/gh/tiborv/memory-cache-ttl/branch/master/graph/badge.svg)](https://codecov.io/gh/tiborv/memory-cache-ttl)
+
 
 A simple (and preformant) in-memory cache with Time To Live functionality.
 
