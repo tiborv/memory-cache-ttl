@@ -6,7 +6,10 @@ deploy:
   email: "m@tib.im"
   api_key:
     secure: rW1UHa7bYL8u+CFC4H76YS4xVW+zn2JKz+w8VmpBPaYBtQuBd0nQKEF2ZyJijqCxuZeH6uT1JS+lbL23stpAm1bJx1QugLe0V0zRX1M7Djj0ifK5kByvs2r9ov3ZhdmCxnovyBIllVvzRQqBGbUftkDQRAvUWy3qQnGszLpxXdVhtAW+xqllW5Kn2oGCVpB2Z6gT1iMCAuZ/eXvTHkza/qHYbsoUmrKB3Rb5BgatC7CvETTkK5ucFhytfOm/8rYg1fNkOCMcjck2442hvsKL7mVqEx93uHcO0H+2AQHva8vn24lPq0yUmZ0vTF0K4Peyvzsbeth5prXLw79K/sfos1Sy3Ud/eLK+QYM17kdZTI0NE7Op7xHqf9zCj/zQ6kCuF/xwCWROHb5WbO21elo9NhgQo3QB2sv4Uz8zi7qAeXNV4TAwXaE/nuBPm7+14sdIyZkhFis1yQRHN1kyRk8cYD0txoaZdjkYJDi3DxTZdcPTCdooAfusGXj2EYEIdqy2uvgt1ICXhNanR6tPhIinWeMTy/PVgE7WBFzlICaWoldflUhNHrx15MOv0+MEy1rClME1Zw9L9QvCvkBwTA1FBILh6vTS/kTlH2OxIyTKE/mxnFpXq4bGTtY/upuqZbjks7WAPjOZ6tjIzhYPe5xWwvxQ2QV226lAOq2aChdyQ4I=
-after_success:
+  on:
+    branch: master
+  skip_cleanup: true
+after_deploy:
 - npm run cover
 before_deploy:
 - npm run build
