@@ -47,9 +47,9 @@ export default class {
   }
 
   static set(id, value, ttl) {
+    if (!ttl && !options.ttl) throw new Error('Global or local TTL needs to be set');
     cache.set(id, value);
     if (ttl) return addToTTLQueue({ id, expires: genExpire(ttl) });
-    if (!options.ttl) throw new Error('Global or local TTL needs to be set');
     addToTTLQueue({
       id,
       expires: options.randomize ?
