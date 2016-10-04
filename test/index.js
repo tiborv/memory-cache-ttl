@@ -65,12 +65,18 @@ test.cb('ttl', t => {
     t.false(cache.check(testKey2));
     t.falsy(cache.get(testKey2));
     t.end();
-  }, 4000);
+  }, 5000);
 });
 
 test('ttl-consistency', t => {
+  cache.init({ ttl: globalTTL, interval: 1, randomize: true });
+  let j = 0;
+  while (j < 1000) {
+    cache.set('wat' + j, 'watwat');
+    j++;
+  }
   const ttlLength = cache.__ttlQueue().length;
-  t.is(ttlLength, 2);
+  t.is(ttlLength, 1002);
   cache.__ttlQueue().forEach((c, i, arr) => {
     if (i < ttlLength - 1) t.true(c.expires.getTime() <= arr[i + 1].expires.getTime());
     t.true(cache.check(c.id));
@@ -78,6 +84,6 @@ test('ttl-consistency', t => {
 });
 
 test('ttl-err', t => {
-  cache.init({ ttl: null, interval: 1, randomize: false });
+  cache.init();
   t.throws(() => cache.set('wat', 'wat'), 'Global or local TTL needs to be set');
 });
