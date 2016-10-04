@@ -20,10 +20,11 @@ const addToTTLQueue = ttl => {
 };
 
 const cleanExpired = () => {
-  const now = new Date();
-  if (ttlQueue.length === 0 || ttlQueue[0].expires.getTime() > now.getTime()) return;
+  if (ttlQueue.length === 0) return;
+  const now = new Date().getTime();
+  if (ttlQueue[0].expires.getTime() > now) return;
   for (let i = 0; i < ttlQueue.length; i++) {
-    if (now.getTime() < ttlQueue[i].expires.getTime()) {
+    if (now < ttlQueue[i].expires.getTime()) {
       ttlQueue.splice(0, i);
       return;
     }
