@@ -1,5 +1,6 @@
 import { test } from 'ava';
-import cache from '../src';
+import requireNew from 'require-new';
+import Promise from 'bluebird';
 
 const testKey = 'testKey';
 const testValue = 'testValue';
@@ -9,12 +10,11 @@ const testKey2 = 'testKey2';
 const testValue2 = 'testValue2';
 const localTTL = 3;
 
-test.before(() => {
-  cache.init({ ttl: globalTTL, interval: 1, randomize: false });
-});
+let cache;
 
 test.beforeEach(() => {
-  cache.flush();
+  cache = requireNew('../src');
+  cache.init({ ttl: globalTTL, interval: 1, randomize: false });
   cache.set(testKey2, testValue2, localTTL);
   cache.set(testKey, testValue);
 });
@@ -45,13 +45,16 @@ test('flush', t => {
 });
 
 test.cb('ttl-global', t => {
+  const cache2 = requireNew('../src');
+  cache2.init({ ttl: globalTTL, interval: 1, randomize: false });
+  cache2.set(testKey, testValue);
   setTimeout(() => {
-    t.true(cache.check(testKey));
-    t.is(cache.get(testKey), testValue);
+    t.true(cache2.check(testKey));
+    t.is(cache2.get(testKey), testValue);
   }, 1000);
   setTimeout(() => {
-    t.false(cache.check(testKey));
-    t.falsy(cache.get(testKey));
+    t.false(cache2.check(testKey));
+    t.falsy(cache2.get(testKey));
     t.end();
   }, 3000);
 });
@@ -86,4 +89,48 @@ test('ttl-consistency', t => {
 test('ttl-err', t => {
   cache.init();
   t.throws(() => cache.set('wat', 'wat'), 'Global or local TTL needs to be set');
+});
+
+test.cb('extendOnHit', t => {
+  const cache2 = requireNew('../src');
+  cache2.init({ ttl: 3, interval: 1, extendOnHit: true });
+  cache2.set(testKey, testValue);
+  setTimeout(() => {
+    t.is(cache2.get(testKey), testValue);
+  }, 1000);
+  setTimeout(() => {
+    t.true(cache2.check(testKey));
+  }, 4000);
+  setTimeout(() => {
+    t.false(cache2.check(testKey));
+    t.end();
+  }, 7000);
+});
+
+test.cb('onInterval', t => {
+  const cache2 = requireNew('../src');
+  let i = 0;
+  cache2.init({
+    ttl: 3,
+    interval: 1,
+    onInterval: (cacheId, expires) => new Promise(res => {
+      i++;
+      res(['wat', expires]);
+    }),
+  });
+  cache2.set(testKey, testValue);
+  setTimeout(() => {
+    t.is(cache2.get(testKey), 'wat');
+    t.is(i, 2);
+    t.end();
+  }, 3000);
+});
+
+test('onInterval-err', t => {
+  const cache2 = requireNew('../src');
+  t.throws(() => cache2.init({
+    ttl: 3,
+    interval: 1,
+    onInterval: true,
+  }), 'onInterval needs to be a Promise/function');
 });
