@@ -1,6 +1,7 @@
 let options = {};
 const cache = new Map();
 let ttlQueue = [];
+let ttlExtend = new Set();
 
 const genExpire = seconds => {
   const t = new Date();
@@ -9,9 +10,9 @@ const genExpire = seconds => {
 };
 
 const addToTTLQueue = ttl => {
+  ttlQueue = ttlQueue.filter(e => e.id !== ttl.id);
   for (let i = 0; i < ttlQueue.length; i++) {
     if (ttl.expires.getTime() < ttlQueue[i].expires.getTime()) {
-      ttlQueue = ttlQueue.filter(e => e.id !== ttl.id);
       ttlQueue.splice(i, 0, ttl);
       return;
     }
@@ -33,51 +34,79 @@ const cleanExpired = () => {
   ttlQueue = [];
 };
 
-let runningProcess;
 
-const checkExpired = () => {
-  if (runningProcess) clearInterval(runningProcess);
-  runningProcess = setInterval(cleanExpired, options.interval * 1000);
+const set = (id, value, ttl) => {
+  if (!ttl && !options.ttl) throw new Error('Global or local TTL needs to be set');
+  cache.set(id, value);
+  if (ttl) return addToTTLQueue({ id, expires: genExpire(ttl) });
+  addToTTLQueue({
+    id,
+    expires: options.randomize ?
+      genExpire(Math.ceil(Math.random() * options.ttl)) :
+      genExpire(options.ttl),
+  });
 };
 
-export default class {
-  static init(o = { interval: 1 }) {
-    options = o;
-    checkExpired();
-  }
+const check = id => cache.has(id);
 
-  static set(id, value, ttl) {
-    if (!ttl && !options.ttl) throw new Error('Global or local TTL needs to be set');
-    cache.set(id, value);
-    if (ttl) return addToTTLQueue({ id, expires: genExpire(ttl) });
-    addToTTLQueue({
-      id,
-      expires: options.randomize ?
-        genExpire(Math.ceil(Math.random() * options.ttl)) :
-        genExpire(options.ttl),
-    });
-  }
+const get = id => {
+  if (options.extendOnHit) ttlExtend.add(id);
+  return cache.get(id);
+};
 
-  static check(id) {
-    return cache.has(id);
-  }
+const del = id => {
+  cache.delete(id);
+  ttlQueue = ttlQueue.filter(t => t.id !== id);
+};
 
-  static get(id) {
-    return cache.get(id);
-  }
+const flush = () => {
+  cache.clear();
+  ttlQueue = [];
+};
 
-  static del(id) {
-    cache.delete(id);
-    ttlQueue = ttlQueue.filter(t => t.id !== id);
-  }
+const onInterval = () => {
+  if (ttlQueue.length === 0) return;
+  ttlQueue.forEach(ttl => {
+    options
+      .onInterval(ttl.id, ttl.expires)
+      .then(([newValue, newTTL]) => {
+        cache.set(ttl.id, newValue);
+        ttl.expires = newTTL;
+      });
+  });
+};
 
-  static flush() {
-    cache.clear();
-    ttlQueue = [];
-  }
 
-  static __ttlQueue() {
-    return ttlQueue;
-  }
+const extendOnHit = () => {
+  if (ttlExtend.size === 0) return;
+  ttlExtend.forEach(id => set(id, cache.get(id)));
+  ttlExtend = new Set();
+};
 
-}
+let runningProcess;
+const runTasks = () => {
+  if (runningProcess) clearInterval(runningProcess);
+  runningProcess = setInterval(() => {
+    if (options.extendOnHit) extendOnHit();
+    if (options.onInterval) onInterval();
+    cleanExpired();
+  }, options.interval * 1000);
+};
+
+const init = (o = { interval: 1 }) => {
+  options = o;
+  if (o.onInterval && typeof o.onInterval !== 'function') {
+    throw new Error('onInterval needs to be a Promise/function');
+  }
+  runTasks();
+};
+
+export default {
+  init,
+  set,
+  get,
+  check,
+  del,
+  flush,
+  __ttlQueue: () => ttlQueue,
+};
