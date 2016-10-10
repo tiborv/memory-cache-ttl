@@ -68,10 +68,9 @@ const onInterval = () => {
   if (ttlQueue.length === 0) return;
   ttlQueue.forEach(ttl => {
     options
-      .onInterval(ttl.id, ttl.expires)
-      .then(([newValue, newTTL]) => {
+      .onInterval(ttl.id)
+      .then((newValue = cache.get(ttl.id)) => {
         cache.set(ttl.id, newValue);
-        ttl.expires = newTTL;
       });
   });
 };

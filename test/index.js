@@ -113,9 +113,10 @@ test.cb('onInterval', t => {
   cache2.init({
     ttl: 3,
     interval: 1,
-    onInterval: (cacheId, expires) => new Promise(res => {
+    onInterval: cacheId => new Promise(res => {
+      t.is(cacheId, testKey);
       i++;
-      res(['wat', expires]);
+      res('wat');
     }),
   });
   cache2.set(testKey, testValue);
