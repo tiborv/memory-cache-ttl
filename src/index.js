@@ -108,4 +108,9 @@ export default {
   del,
   flush,
   __ttlQueue: () => ttlQueue,
+  stats: () => ({
+    cacheSize: cache.size,
+    ttlQueueSize: ttlQueue.length,
+    ttlExtendSize: ttlExtend.size,
+  }),
 };
