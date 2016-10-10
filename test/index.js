@@ -42,6 +42,8 @@ test('flush', t => {
   t.false(cache.check(testKey2));
   t.falsy(cache.get(testKey2));
   t.is(cache.__ttlQueue().length, 0);
+  const stats = cache.stats();
+  Object.keys(stats).map(s => t.is(stats[s], 0));
 });
 
 test.cb('ttl-global', t => {
@@ -56,7 +58,7 @@ test.cb('ttl-global', t => {
     t.false(cache2.check(testKey));
     t.falsy(cache2.get(testKey));
     t.end();
-  }, 3000);
+  }, 4000);
 });
 
 test.cb('ttl', t => {
