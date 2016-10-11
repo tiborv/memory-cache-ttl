@@ -58,5 +58,8 @@
       "babel-register"
     ],
     "babel": "inherit"
+  },
+  "dependencies": {
+    "object-sizeof": "^1.1.1"
   }
 }
