@@ -1,3 +1,5 @@
+import sizeof from 'object-sizeof';
+
 let options = {};
 let cache = {};
 let ttlQueue = [];
@@ -109,10 +111,9 @@ export default {
   flush,
   __ttlQueue: () => ttlQueue,
   stats: () => ({
-    cacheSize: Object.keys(cache).length,
-    ttlQueueSize: ttlQueue.length,
-    ttlExtendSize: ttlExtend.size,
-    ttlQueue: ttlQueue.map(t => t.id),
-    cacheKeys: Object.keys(cache),
+    cacheEntries: Object.keys(cache).length,
+    ttlQueueEntries: ttlQueue.length,
+    ttlExtendEntries: ttlExtend.size,
+    cacheSize: sizeof(cache),
   }),
 };
