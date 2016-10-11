@@ -87,8 +87,8 @@ const runTasks = () => {
   if (runningProcess) clearInterval(runningProcess);
   runningProcess = setInterval(() => {
     if (options.extendOnHit) extendOnHit();
-    if (options.onInterval) onInterval();
     cleanExpired();
+    if (options.onInterval) onInterval();
   }, options.interval * 1000);
 };
 
