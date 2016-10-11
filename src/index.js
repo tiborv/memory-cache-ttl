@@ -11,15 +11,21 @@ const genExpire = seconds => {
   return t;
 };
 
+const sortedIndex = (array, value) => {
+  let low = 0;
+  let high = array.length;
+
+  while (low < high) {
+    const mid = low + high >>> 1; // eslint-disable-line no-bitwise
+    if (array[mid].expires.getTime() < value) low = mid + 1;
+    else high = mid;
+  }
+  return low;
+};
+
 const addToTTLQueue = ttl => {
   ttlQueue = ttlQueue.filter(e => e.id !== ttl.id);
-  for (let i = 0; i < ttlQueue.length; i++) {
-    if (ttl.expires.getTime() < ttlQueue[i].expires.getTime()) {
-      ttlQueue.splice(i, 0, ttl);
-      return;
-    }
-  }
-  ttlQueue.push(ttl);
+  ttlQueue.splice(sortedIndex(ttlQueue, ttl.expires.getTime()), 0, ttl);
 };
 
 const cleanExpired = () => {
