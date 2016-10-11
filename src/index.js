@@ -112,7 +112,7 @@ export default {
     cacheSize: Object.keys(cache).length,
     ttlQueueSize: ttlQueue.length,
     ttlExtendSize: ttlExtend.size,
-    ttlQueue: ttlQueue,
+    ttlQueue: ttlQueue.map(t => t.id),
     cacheKeys: Object.keys(cache),
   }),
 };
