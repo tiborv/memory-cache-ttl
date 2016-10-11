@@ -11,13 +11,13 @@ const genExpire = seconds => {
   return t;
 };
 
-const sortedIndex = (array, value) => {
+const sortedIndex = (value) => {
   let low = 0;
-  let high = array.length;
+  let high = ttlQueue.length;
 
   while (low < high) {
     const mid = low + high >>> 1; // eslint-disable-line no-bitwise
-    if (array[mid].expires.getTime() < value) low = mid + 1;
+    if (ttlQueue[mid].expires.getTime() < value) low = mid + 1;
     else high = mid;
   }
   return low;
@@ -25,21 +25,16 @@ const sortedIndex = (array, value) => {
 
 const addToTTLQueue = ttl => {
   ttlQueue = ttlQueue.filter(e => e.id !== ttl.id);
-  ttlQueue.splice(sortedIndex(ttlQueue, ttl.expires.getTime()), 0, ttl);
+  ttlQueue.splice(sortedIndex(ttl.expires.getTime()), 0, ttl);
 };
 
 const cleanExpired = () => {
   if (ttlQueue.length === 0) return;
   const now = new Date().getTime();
   if (ttlQueue[0].expires.getTime() > now) return;
-  for (let i = 0; i < ttlQueue.length; i++) {
-    if (now < ttlQueue[i].expires.getTime()) {
-      ttlQueue.splice(0, i);
-      return;
-    }
-    delete cache[ttlQueue[i].id];
-  }
-  ttlQueue = [];
+  const expiredIndex = sortedIndex(now);
+  ttlQueue.slice(0, expiredIndex).map(ttl => delete cache[ttl.id]);
+  ttlQueue = ttlQueue.slice(expiredIndex, ttlQueue.length);
 };
 
 
