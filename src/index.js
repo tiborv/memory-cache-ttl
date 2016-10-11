@@ -112,6 +112,7 @@ export default {
     cacheSize: Object.keys(cache).length,
     ttlQueueSize: ttlQueue.length,
     ttlExtendSize: ttlExtend.size,
+    ttlQueue: ttlQueue,
     cacheKeys: Object.keys(cache),
   }),
 };
