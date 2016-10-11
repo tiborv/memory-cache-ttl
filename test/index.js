@@ -125,6 +125,8 @@ test.cb('onInterval', t => {
   setTimeout(() => {
     t.is(cache2.get(testKey), 'wat');
     t.is(i, 2);
+    const stats = cache2.stats();
+    Object.keys(stats).map(s => s.length ? null : t.is(stats[s], 0));
     t.end();
   }, 3000);
 });

@@ -1,6 +1,6 @@
 {
   "name": "memory-cache-ttl",
-  "version": "1.0.37",
+  "version": "1.0.40",
   "repository": {
     "type": "git",
     "url": "git@github.com:tiborv/memory-cache-ttl.git"

@@ -1,5 +1,5 @@
 let options = {};
-const cache = new Map();
+let cache = {};
 let ttlQueue = [];
 let ttlExtend = new Set();
 
@@ -29,7 +29,7 @@ const cleanExpired = () => {
       ttlQueue.splice(0, i);
       return;
     }
-    cache.delete(ttlQueue[i].id);
+    delete cache[ttlQueue[i].id];
   }
   ttlQueue = [];
 };
@@ -37,7 +37,7 @@ const cleanExpired = () => {
 
 const set = (id, value, ttl) => {
   if (!ttl && !options.ttl) throw new Error('Global or local TTL needs to be set');
-  cache.set(id, value);
+  cache[id] = value;
   if (ttl) return addToTTLQueue({ id, expires: genExpire(ttl) });
   addToTTLQueue({
     id,
@@ -47,20 +47,20 @@ const set = (id, value, ttl) => {
   });
 };
 
-const check = id => cache.has(id);
+const check = id => id in cache;
 
 const get = id => {
   if (options.extendOnHit) ttlExtend.add(id);
-  return cache.get(id);
+  return cache[id];
 };
 
 const del = id => {
-  cache.delete(id);
+  delete cache[id];
   ttlQueue = ttlQueue.filter(t => t.id !== id);
 };
 
 const flush = () => {
-  cache.clear();
+  cache = {};
   ttlQueue = [];
 };
 
@@ -69,8 +69,8 @@ const onInterval = () => {
   ttlQueue.forEach(ttl => {
     options
       .onInterval(ttl.id)
-      .then((newValue = cache.get(ttl.id)) => {
-        cache.set(ttl.id, newValue);
+      .then((newValue = cache[ttl.id]) => {
+        cache[ttl.id] = newValue;
       });
   });
 };
@@ -78,7 +78,7 @@ const onInterval = () => {
 
 const extendOnHit = () => {
   if (ttlExtend.size === 0) return;
-  ttlExtend.forEach(id => set(id, cache.get(id)));
+  ttlExtend.forEach(id => set(id, cache[id]));
   ttlExtend = new Set();
 };
 
@@ -109,7 +109,7 @@ export default {
   flush,
   __ttlQueue: () => ttlQueue,
   stats: () => ({
-    cacheSize: cache.size,
+    cacheSize: Object.keys(cache).length,
     ttlQueueSize: ttlQueue.length,
     ttlExtendSize: ttlExtend.size,
     cacheKeys: Object.keys(cache),
