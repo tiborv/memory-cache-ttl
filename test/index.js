@@ -62,15 +62,18 @@ test.cb('ttl-global', t => {
 });
 
 test.cb('ttl', t => {
+  const cache2 = requireNew('../src');
+  cache2.init({ ttl: globalTTL, interval: 1 });
+  cache2.set(testKey, testValue);
   setTimeout(() => {
-    t.true(cache.check(testKey2));
-    t.is(cache.get(testKey2), testValue2);
-  }, 2000);
+    t.true(cache2.check(testKey));
+    t.is(cache2.get(testKey), testValue);
+  }, 1000);
   setTimeout(() => {
-    t.false(cache.check(testKey2));
-    t.falsy(cache.get(testKey2));
+    t.false(cache2.check(testKey));
+    t.falsy(cache2.get(testKey));
     t.end();
-  }, 5000);
+  }, 3000);
 });
 
 test('ttl-consistency', t => {

@@ -56,3 +56,10 @@ setTimeout(() => {
 
 ### randomize [boolean]
   randomizes the TTL (needs global TTL to be set)
+
+### extendOnHit [boolean]
+  resets the TTL on a cache entry hit with .get()
+
+### onInterval [Promise(id) => newValue]
+  a promise called on each interval, takes cache entry id as a parameter and can (optional) return a new cache entry value.  
+  if no value is returned, the old cache value is used.

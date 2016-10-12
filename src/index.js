@@ -11,7 +11,7 @@ const genExpire = seconds => {
   return t;
 };
 
-const sortedIndex = (value) => {
+const binarySearch = (value) => {
   let low = 0;
   let high = ttlQueue.length;
 
@@ -25,14 +25,14 @@ const sortedIndex = (value) => {
 
 const addToTTLQueue = ttl => {
   ttlQueue = ttlQueue.filter(e => e.id !== ttl.id);
-  ttlQueue.splice(sortedIndex(ttl.expires.getTime()), 0, ttl);
+  ttlQueue.splice(binarySearch(ttl.expires.getTime()), 0, ttl);
 };
 
 const cleanExpired = () => {
   if (ttlQueue.length === 0) return;
   const now = new Date().getTime();
   if (ttlQueue[0].expires.getTime() > now) return;
-  const expiredIndex = sortedIndex(now);
+  const expiredIndex = binarySearch(now);
   ttlQueue.slice(0, expiredIndex).map(ttl => delete cache[ttl.id]);
   ttlQueue = ttlQueue.slice(expiredIndex, ttlQueue.length);
 };
