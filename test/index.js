@@ -68,12 +68,12 @@ test.cb('ttl', t => {
   setTimeout(() => {
     t.true(cache2.check(testKey));
     t.is(cache2.get(testKey), testValue);
-  }, 1000);
+  }, 500);
   setTimeout(() => {
     t.false(cache2.check(testKey));
     t.falsy(cache2.get(testKey));
     t.end();
-  }, 3000);
+  }, 4000);
 });
 
 test('ttl-consistency', t => {
