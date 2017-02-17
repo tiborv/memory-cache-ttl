@@ -1,5 +1,7 @@
 # memory-cache-ttl [![Build Status](https://travis-ci.org/tiborv/memory-cache-ttl.svg?branch=master)](https://travis-ci.org/tiborv/memory-cache-ttl) [![codecov](https://codecov.io/gh/tiborv/memory-cache-ttl/branch/master/graph/badge.svg)](https://codecov.io/gh/tiborv/memory-cache-ttl)
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/tiborv/memory-cache-ttl.svg)](https://greenkeeper.io/)
+
 
 A simple (and performant) in-memory cache with Time To Live functionality.
 
