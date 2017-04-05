@@ -33,7 +33,7 @@
     "codecov": "~2.1.0",
     "nyc": "^10.1.2",
     "require-new": "^1.1.1",
-    "standard": "~9.0.2"
+    "standard": "~10.0.0"
   },
   "files": [
     "dist/"
