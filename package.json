@@ -30,7 +30,7 @@
     "babel-register": "^6.24.1",
     "benchmark": "^2.1.4",
     "bluebird": "^3.5.0",
-    "codecov": "^2.2.0",
+    "codecov": "^3.0.0",
     "nyc": "^11.0.3",
     "require-new": "^1.1.1",
     "standard": "^10.0.2"
